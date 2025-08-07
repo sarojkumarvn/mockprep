@@ -15,17 +15,23 @@ import {
   Trophy
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Layout } from "@/components/Layout";
 import Editor from "@monaco-editor/react";
 
 export default function AIInterview() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isAudioOn, setIsAudioOn] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [showEndDialog, setShowEndDialog] = useState(false);
   const [interviewStarted, setInterviewStarted] = useState(false);
+  
+  // Check if coming from setup with fullscreen mode
+  const isFullScreen = location.state?.isFullScreen || false;
+  const setupData = location.state?.setupData;
 
   // Timer logic
   useEffect(() => {
@@ -52,6 +58,13 @@ export default function AIInterview() {
     navigate("/interview-analysis");
   };
 
+  // Auto-start interview if coming from setup
+  useEffect(() => {
+    if (isFullScreen && setupData) {
+      setInterviewStarted(true);
+    }
+  }, [isFullScreen, setupData]);
+
   if (!interviewStarted) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
@@ -69,15 +82,15 @@ export default function AIInterview() {
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Duration:</span>
-                <Badge variant="secondary">45 minutes</Badge>
+                <Badge variant="secondary">{setupData?.duration || '45'} minutes</Badge>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Type:</span>
-                <Badge variant="secondary">Technical Interview</Badge>
+                <Badge variant="secondary">{setupData?.type || 'Technical Interview'}</Badge>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Level:</span>
-                <Badge variant="secondary">Intermediate</Badge>
+                <span className="text-muted-foreground">Topic:</span>
+                <Badge variant="secondary">{setupData?.topic || 'General'}</Badge>
               </div>
             </div>
             <Button
@@ -93,33 +106,45 @@ export default function AIInterview() {
     );
   }
 
-  return (
-    <div className="space-y-6">
+  // Full screen interview content
+  const interviewContent = (
+
+    <div className={`min-h-screen bg-background ${isFullScreen ? 'p-0' : 'space-y-6'}`}>
       {/* Header with Timer */}
-      <div className="flex items-center justify-between">
+      <div className={`flex items-center justify-between ${isFullScreen ? 'fixed top-4 left-4 right-4 z-50 bg-background/80 backdrop-blur-md rounded-lg p-4' : ''}`}>
         <div className="flex items-center gap-4">
           <Badge variant="secondary" className="text-lg px-4 py-2">
             <Timer className="h-4 w-4 mr-2" />
             {formatTime(timeElapsed)}
           </Badge>
-          <h1 className="text-2xl font-bold text-foreground">AI Technical Interview</h1>
+          {!isFullScreen && <h1 className="text-2xl font-bold text-foreground">AI Technical Interview</h1>}
         </div>
-        <Button
-          onClick={handleEndInterview}
-          variant="destructive"
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
-          <Phone className="h-4 w-4 mr-2" />
-          End Interview
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowCodeEditor(!showCodeEditor)}
+            className="bg-background/80 backdrop-blur-sm"
+          >
+            <Code className="h-4 w-4 mr-2" />
+            {showCodeEditor ? "Hide" : "Open"} Code Editor
+          </Button>
+          <Button
+            onClick={handleEndInterview}
+            variant="destructive"
+            className="bg-red-600 hover:bg-red-700 text-white"
+          >
+            <Phone className="h-4 w-4 mr-2" />
+            End Interview
+          </Button>
+        </div>
       </div>
 
       {/* Video Layout */}
-      <div className={`grid gap-6 ${showCodeEditor ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1 lg:grid-cols-2'}`}>
+      <div className={`${isFullScreen ? 'pt-20 h-screen' : ''} ${showCodeEditor ? 'grid grid-cols-1 lg:grid-cols-[70%_30%] gap-4 h-full' : 'grid grid-cols-2 gap-6 h-full'}`}>
         {/* Code Editor (when toggled) */}
         {showCodeEditor && (
-          <div className="lg:col-span-2">
-            <Card className="glass-card h-[600px]">
+          <div className="h-full">
+            <Card className={`glass-card ${isFullScreen ? 'h-[calc(100vh-6rem)]' : 'h-[600px]'}`}>
               <CardContent className="p-4 h-full">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-foreground">Code Editor</h3>
@@ -131,15 +156,17 @@ export default function AIInterview() {
                     Close Editor
                   </Button>
                 </div>
-                <div className="h-[520px] rounded-lg overflow-hidden border border-border">
+                <div className={`rounded-lg overflow-hidden border border-border ${isFullScreen ? 'h-[calc(100%-3rem)]' : 'h-[520px]'}`}>
                   <Editor
                     height="100%"
                     defaultLanguage="javascript"
-                    defaultValue="// Write your solution here
+                    defaultValue={`// Problem: ${setupData?.topic || 'Two Sum'}
+// Write your solution here
+
 function solveProblem() {
   // Your code goes here
   
-}"
+}`}
                     theme="vs-dark"
                     options={{
                       minimap: { enabled: false },
@@ -154,11 +181,11 @@ function solveProblem() {
         )}
 
         {/* Video Panels */}
-        <div className={`space-y-6 ${showCodeEditor ? 'lg:col-span-1' : 'lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6'}`}>
+        <div className={`${showCodeEditor ? 'space-y-4' : 'space-y-6 grid grid-cols-1 lg:grid-cols-2 gap-6'} h-full`}>
           {/* Candidate Video */}
           <Card className="glass-card">
             <CardContent className="p-4">
-              <div className="aspect-video bg-gradient-primary rounded-lg relative overflow-hidden">
+              <div className={`bg-gradient-primary rounded-lg relative overflow-hidden ${showCodeEditor ? 'aspect-video' : 'aspect-video'} ${isFullScreen ? 'h-full min-h-[200px]' : ''}`}>
                 <div className="absolute inset-0 flex items-center justify-center">
                   {isVideoOn ? (
                     <div className="text-white text-center">
@@ -182,7 +209,7 @@ function solveProblem() {
           {/* AI Interviewer */}
           <Card className="glass-card">
             <CardContent className="p-4">
-              <div className="aspect-video bg-gradient-secondary rounded-lg relative overflow-hidden">
+              <div className={`bg-gradient-secondary rounded-lg relative overflow-hidden ${showCodeEditor ? 'aspect-video' : 'aspect-video'} ${isFullScreen ? 'h-full min-h-[200px]' : ''}`}>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-white text-center">
                     <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -196,7 +223,7 @@ function solveProblem() {
                 </Badge>
                 <div className="absolute bottom-2 left-2 right-2">
                   <div className="bg-black/50 backdrop-blur-sm rounded p-2 text-white text-sm">
-                    "Let's start with a coding challenge. Can you implement a function to find the two sum in an array?"
+                    {setupData?.topic ? `"Let's discuss ${setupData.topic}. Can you tell me about your experience with this technology?"` : "Let's start with a coding challenge. Can you implement a function to find the two sum in an array?"}
                   </div>
                 </div>
               </div>
@@ -206,7 +233,7 @@ function solveProblem() {
       </div>
 
       {/* Controls */}
-      <Card className="glass-card">
+      <Card className={`glass-card ${isFullScreen ? 'fixed bottom-4 left-1/2 transform -translate-x-1/2 w-auto z-50' : ''}`}>
         <CardContent className="p-4">
           <div className="flex items-center justify-center gap-4">
             <Button
@@ -225,16 +252,6 @@ function solveProblem() {
               className="rounded-full w-12 h-12 p-0"
             >
               {isAudioOn ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
-            </Button>
-
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setShowCodeEditor(!showCodeEditor)}
-              className="rounded-full"
-            >
-              <Code className="h-5 w-5 mr-2" />
-              {showCodeEditor ? "Hide" : "Show"} Code Editor
             </Button>
 
             <Button
@@ -299,4 +316,15 @@ function solveProblem() {
       </Dialog>
     </div>
   );
+
+  // Render with or without layout based on fullscreen mode
+  if (isFullScreen) {
+    return (
+      <Layout hideSidebar={true}>
+        {interviewContent}
+      </Layout>
+    );
+  }
+
+  return interviewContent;
 }

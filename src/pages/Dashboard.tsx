@@ -204,7 +204,7 @@ export default function Dashboard() {
             <Button 
               variant="outline" 
               className="h-20 flex-col gap-2 hover:bg-accent/10 border-accent/20"
-              onClick={() => navigate("/ai-interview")}
+              onClick={() => navigate("/interview-setup")}
             >
               <Play className="h-5 w-5" />
               Start AI Interview

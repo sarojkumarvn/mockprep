@@ -11,16 +11,17 @@ import AIInterview from "./pages/AIInterview";
 import InterviewAnalysis from "./pages/InterviewAnalysis";
 import Analytics from "./pages/Analytics";
 import ResumeBuilder from "./pages/ResumeBuilder";
-import { 
-  StudyHub, 
-  Notes, 
-  PDFTools, 
-  Community, 
-  Blog, 
-  Jobs, 
-  Documentation, 
-  Achievements, 
-  Settings 
+import InterviewSetup from "./pages/InterviewSetup";
+import {
+  StudyHub,
+  Notes,
+  PDFTools,
+  Community,
+  Blog,
+  Jobs,
+  Documentation,
+  Achievements,
+  Settings
 } from "./pages/BlankPages";
 import NotFound from "./pages/NotFound";
 
@@ -39,7 +40,8 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/mock-tests" element={<MockTests />} />
-              <Route path="/ai-interview" element={<AIInterview />} />
+            <Route path="/interview-setup" element={<InterviewSetup />} />
+            <Route path="/ai-interview" element={<AIInterview />} />
               <Route path="/interview-analysis" element={<InterviewAnalysis />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/resume-builder" element={<ResumeBuilder />} />

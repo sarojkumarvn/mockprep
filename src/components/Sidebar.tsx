@@ -25,7 +25,7 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
   { name: "Roadmaps", href: "/roadmaps", icon: MapPin },
   { name: "Mock Tests", href: "/mock-tests", icon: FileCheck },
-  { name: "AI Interview", href: "/ai-interview", icon: Brain },
+  { name: "AI Interview", href: "/interview-setup", icon: Brain },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Resume Builder", href: "/resume-builder", icon: FileText },
   { name: "Study Hub", href: "/study-hub", icon: GraduationCap },
@@ -39,7 +39,12 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps = {}) {
   const location = useLocation();
 
   return (
