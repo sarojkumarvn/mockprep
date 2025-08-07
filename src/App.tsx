@@ -26,37 +26,39 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/roadmaps" element={<Roadmaps />} />
-            <Route path="/mock-tests" element={<MockTests />} />
-            <Route path="/ai-interview" element={<AIInterview />} />
-            <Route path="/interview-analysis" element={<InterviewAnalysis />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/resume-builder" element={<ResumeBuilder />} />
-            <Route path="/study-hub" element={<StudyHub />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/pdf-tools" element={<PDFTools />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/documentation" element={<Documentation />} />
-            <Route path="/achievements" element={<Achievements />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/roadmaps" element={<Roadmaps />} />
+              <Route path="/mock-tests" element={<MockTests />} />
+              <Route path="/ai-interview" element={<AIInterview />} />
+              <Route path="/interview-analysis" element={<InterviewAnalysis />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/resume-builder" element={<ResumeBuilder />} />
+              <Route path="/study-hub" element={<StudyHub />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/pdf-tools" element={<PDFTools />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/achievements" element={<Achievements />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
